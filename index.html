@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <title>Slotted ALOHA | Visualization</title>
+
+  <style type="text/css">
+    body, html, select {
+      font: 10pt sans-serif;
+    }
+    .retransmitted {
+      background: yellow;
+    }
+    .collision {
+      background: red;
+    }
+
+    div.title {
+      margin: 0;
+      width: 100%;
+    }
+    
+    div.title > span {
+      padding: 4px;
+    }
+    
+    div.body {
+      padding: 7px;
+    }
+    
+  </style>
+
+  <script src="vis.js"></script>
+    <script src="jquery.js"></script>
+  
+  <script src='aloha.js'></script>
+  <link rel= "stylesheet" type= "text/css" href= "vis.css">
+</head>
+<body>
+<h2>Slotted ALOHA | Visualization</h2>
+<p style="max-width: 700px;">
+  This webpage demonstrates the working of the Slotted ALOHA protocol.
+</p>
+
+<div id="visualization"></div>
+  
+<button id='next'>Tick</div>
+
+<script type="text/javascript">
+  var DELAY = 500; // delay in ms to add new data points
+  
+  var CLIENTS = 6;
+
+  var strategy = document.getElementById('strategy');
+
+  var container = document.getElementById('visualization');
+
+  var r_count = 1;
+  var dataset = new vis.DataSet([
+    {id: 1, sender: '1', start: 1, end: 2}
+  ]);
+  
+  var net = new Network()
+  
+    
+  $('#next').click(function() {
+    var requestsForSlot = []
+    for (var i = 0; i < CLIENTS; i++) {
+        var random = Math.ceil((Math.random() * 8) + 1);
+        if (random == 6) {
+            r = new Request(i)
+            net.attempt_broadcast(r);
+        }
+      if (net.elapsed_frame_time % CLIENTS == 0 && net.elapsed_frame_time > 0)
+       ;// timeline.moveTo(net.elapsed_frame_time + 8)    
+    }
+    var currentRequests = net.tick();
+    timeline.setCurrentTime(net.elapsed_frame_time)
+    for (var i = 0; i < currentRequests.length; i++) {
+      console.log('i: ' + i)
+      var newRequest = {id: r_count++, sender: i, start: net.elapsed_frame_time, end: net.elapsed_frame_time + 1, content: currentRequests[i].getContent()}
+      if (currentRequests.length > 1) {
+        newRequest.style = 'background-color: #D14836; border-color: #D14836; color: white;'
+      } 
+      if (currentRequests[i].retransmitted)
+        newRequest.style
+      if (r_count - 1 == 1)
+        dataset.update(newRequest);
+      else
+        dataset.add(newRequest);
+      if (timeline.getVisibleItems().indexOf(newRequest.id) == -1)
+        timeline.moveTo(net.elapsed_frame_time)
+    }
+    
+   
+  });
+
+  var options = {
+    // Set global item type. Type can also be specified for items individually
+    // Available types: 'box' (default), 'point', 'range', 'rangeoverflow'
+    type: 'range',
+    start: 6,
+    height: '400px',
+    showCurrentTime: true,
+    showMajorLabels: false,
+    orientation: 'top',
+    maxHeight: '400px'
+  };
+
+  var timeline = new vis.Timeline(container, dataset, options);
+  timeline.setCurrentTime(net.elapsed_frame_time)
+
+</script>
+</body>
+</html>
